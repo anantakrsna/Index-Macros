@@ -18,7 +18,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Settings
 doc_software = "foxit" 			; including embedding document. 
-index_software = sky
+index_software = cindex			; must by "cindex" or "sky" WITHOUT quotes
 index_suffix = " and"
 
 ^+e::
@@ -53,20 +53,30 @@ return
 Change_index_software() {
 	global index_software
 	MsgBox %index_software%
-	if (index_software = "sky") 
+	if (index_software = "sky") and (! WinExist("ahk_class ThunderRT6FormDC")) 
 	{
-		IfWinNotExist, ahk_class ThunderRT6FormDC
-			MsgBox Sky is not open. Please open Sky and your index file.
-		WinActivate ahk_class ThunderRT6FormDC
+		MsgBox Sky is not open. Please open Sky and your index file.
 		return
 	}
-	else if (index_software = "cindex") 
+	else if (index_software = "sky") and (WinExist("ahk_class ThunderRT6FormDC"))
 	{
-		IfWinNotExist, ahk_class cdx_frame
-			MsgBox Cindex is not open. Please open Cindex and your index file.
-		WinActivate ahk_class cdx_frame
+		WinActivate
 		return
-	} 
+	}
+	if (index_software = "cindex") and (! WinExist("ahk_class cdx_frame$")) 
+	{
+		MsgBox Cindex is not open. Please open Cindex and your index file.
+		return
+	}
+	else if (index_software = "cindex") and (WinExist("ahk_class cdx_frame$"))
+	{
+		WinActivate
+		return
+	}
+	else 
+	{
+		MsgBox Set index_software variable to valid value.		
+	}
 }
 	
 
