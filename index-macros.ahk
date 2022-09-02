@@ -17,10 +17,94 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Settings
+doc_software = "Foxit" 			; including embedding document. 
+index_software = "Sky"
+index_suffix = " and"
 
-; Software
+; Functions to Software
 
-; Cleaning of diacritics required
+	; Functions to do list
+
+		; Identify current app - Used to return to app/document pasted from
+		
+		; change to preferred indexing software
+		
+		; change to preferred pdf/embedding document software - last instance used
+				
+		; create new record in preferred indexing software
+		
+		; move to page in preferred indexing software
+		
+		; move to subheading in preferred indexing software
+		
+		; swap main and sub in preferred indexing software
+		
+		; complete/finalize record in preferred indexing software
+		
+		; xrefs clipboard to main
+
+; Macros
+
+	; Macro To Do list
+		
+		; Simple copy paste to main
+		
+			; Copy text to main and return
+			
+			; Copy text to main and return, strips formatting
+			
+			; Copy text to main and return, strips formatting adds italic (mainly to strip bold)
+			
+			; Copy text to main and stay	
+		
+			; Copy text to main and stay, strips formatting
+			
+			; Copy text to main and stay, strips formatting adds italic (mainly to strip bold)
+			
+		; Pastes to subheads
+		
+			; Copy from pdf, creates new record from previous main, pastes to subhead, returns to pdf on enter
+			
+			; Copy from pdf, creates new record from previous main, pastes to subhead, returns to pdf on enter - plural
+			
+			; Copy from pdf, creates new record from previous main, pastes to subhead, returns to pdf on enter - and
+			
+			; Copy from pdf, creates new record from previous main, pastes to subhead, returns to pdf on enter - plural + and
+			
+		; xrefs
+			
+			; Copy from pdf, creates new record from previous main, pastes to subhead, also creates xref from sub to main
+			
+			; Copy from pdf, creates new record from previous main, pastes to subhead, swaps to double post, ensures original main is still the the last main so lists can be done quickly
+			
+		; books / inversions / names - Inversion happen for many reasons. 
+		
+			; invert last - used for names and general
+		
+				; Copy from pdf, invert last word and paste to index, return to pdf
+				
+				; Copy from pdf, invert last word and paste to index, doesn't return to pdf
+				
+			; Invert first - mainly for books
+
+				; Copy from pdf, invert first word and paste to index, return to pdf
+				
+				; Copy from pdf, invert first word and paste to index, doesn't return to pdf
+
+			; No inversion but with parentheses - books and general
+			
+				; Copy text to main add parentheses wait for input, returns to pdf on enter
+			
+		; Search/navigate pdf / text
+		
+			; Copy text from index and search pdf. Must work with italics and unicode, preferrably highlight word in pdf/text editor,
+				
+				; Maybe have two, one that starts from the beginning of the pdf and one that starts at the page
+			
+			; Find page of current index record, switch to pdf, go to page
+			
+			; Search for embedded id in index record, switch to embedding software (text editor), search for embedded tag/range in text editor or other software
+
 
 ; Switch to Sky
 ^+q::
@@ -29,3 +113,5 @@ IfWinNotExist, ahk_class ThunderRT6FormDC
 WinActivate ahk_class ThunderRT6FormDC
 return
 
+
+; Copy from Foxit
