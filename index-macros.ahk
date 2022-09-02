@@ -18,41 +18,35 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Settings
 doc_software = "foxit" 			; including embedding document. 
-index_software = cindex			; must by "cindex" or "sky" WITHOUT quotes
+index_software = sky			; must by "cindex" or "sky" WITHOUT quotes
 index_suffix = " and"
 
 ^+e::
-Change_index_software()
+finalize_record()
 return
+
 
 ; Functions to do list
 
-	; Identify current app - Used to return to app/document pasted from
-
-	; Identify current app - Used to return to app/document pasted from
-
 	; change to preferred pdf/embedding document software - last instance used
-
-	; create new record in preferred indexing software
-
-	; move to page in preferred indexing software
-
-	; move to subheading in preferred indexing software
-
-	; swap main and sub in preferred indexing software
-
-	; complete/finalize record in preferred indexing software
 
 	; xrefs clipboard to main
 
 
+
+;;;;;;;;;;;
 ; Functions
+;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Functions to standardize interface
+; With different software packages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; change to preferred indexing software
 
 Change_index_software() {
 	global index_software
-	MsgBox %index_software%
 	if (index_software = "sky") and (! WinExist("ahk_class ThunderRT6FormDC")) 
 	{
 		MsgBox Sky is not open. Please open Sky and your index file.
@@ -78,7 +72,86 @@ Change_index_software() {
 		MsgBox Set index_software variable to valid value.		
 	}
 }
-	
+
+
+; create new record in preferred indexing software
+
+create_new_record() {
+	global index_software
+	if (index_software = "sky") 
+	{
+		Send {ctrl down}{;}{ctrlup}
+		return
+	}
+	if (index_software = "cindex")
+	{
+		Send {ctrl down}k{ctrlup}
+		return
+	}
+}
+
+; move to subheading from main in preferred indexing software
+Move_to_sub_from_main() {
+	global index_software
+	if (index_software = "sky") 
+	{
+		Send {tab}
+		return
+	}
+	if (index_software = "cindex")
+	{
+		Send {tab}
+		return
+	}
+}
+
+; swap main and sub in preferred indexing software
+Swap_sub_and_main() { 	; Main must be selected
+	global index_software
+	if (index_software = "sky") 
+	{
+		Send {f4}{left}
+		return
+	}
+	if (index_software = "cindex")
+	{
+		Send {ctrl down}{+}{ctrl up}
+		return
+	}
+}
+
+
+; complete/finalize record in preferred indexing software
+Finalize_record() {
+	global index_software
+	if (index_software = "sky") 
+	{
+		Send {down}{up}
+		return
+	}
+	if (index_software = "cindex")
+	{
+		Send {ctrl down}k{ctrl up}
+		return
+	}
+}
+
+
+; Move to page
+Move_to_page() {
+	global index_software
+	if (index_software = "sky") 
+	{
+		Send {down}{up}
+		return
+	}
+	if (index_software = "cindex")
+	{
+		Send {ctrl down}k{ctrl up}
+		return
+	}
+}
+
 
 
 
