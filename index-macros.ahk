@@ -17,12 +17,13 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 ; Settings
-doc_software = "foxit" 			; including embedding document. 
-index_software = sky			; must by "cindex" or "sky" WITHOUT quotes
-index_suffix = " and"
+v_doc_software = "foxit" 			; including embedding document. 
+v_index_software = sky			; must by "cindex" or "sky" WITHOUT quotes
+v_and_suffix = " and"
+v_plural_suffix = "s"
 
 ^+e::
-finalize_record()
+f_finalize_record()
 return
 
 
@@ -30,11 +31,80 @@ return
 ; Macros ;
 ;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;
+; Macro To Do list ;
+;;;;;;;;;;;;;;;;;;;;
 
 ; Simple copy paste to main
 
-; Copy text to main and return
-#
+	; Copy text to main includes formatting
+^#c::
+WinGet, v_source_id, ID, A
+Send ^c
+f_change_to_index_software()
+f_create_new_record()
+Send ^v
+Send {F2}
+f_strip_fonts()
+f_return()
+
+
+	; Copy text to main strips formatting
+
+!#c::
+WinGet, v_source_id, ID, A
+Send ^c
+f_change_to_index_software()
+f_create_new_record()
+Send ^v
+f_strip_formatting()
+f_return()
+
+; Pastes to subheads - Mainly for lists
+
+	; Copy from pdf, creates new record from previous main, pastes to subhead,
+
+	; Copy from pdf, creates new record from previous main, pastes to subhead adds "s",
+
+	; Copy from pdf, creates new record from previous main, pastes to subhead, adds and
+
+	; Copy from pdf, creates new record from previous main, pastes to subhead, plural + and
+
+	; The above but also doubleposts
+
+; books / inversions / names - Inversion happen for many reasons. 
+
+	; invert last - used for names and general
+
+		; Copy from pdf, invert last word and paste to index
+
+		; Copy from pdf, invert last word and paste to index initials with dots
+
+		; Copy from pdf, invert last word and paste to index initials without dots
+
+		; As above but with list of names
+
+	; Invert first - mainly for books without authors eg. The Bible. 
+
+		; Copy from pdf, invert first word and paste to new main
+
+	; with parentheses - books and general
+
+		; Copy text to main add parentheses with curser within
+
+		; as above, invert first word
+
+		; as above but roman type in quotes
+
+; Search/navigate pdf / text
+
+	; Copy text from index and search pdf. Must work with italics and unicode
+
+		; Maybe have two, one that starts from the beginning of the pdf and one that starts at the page
+
+	; Find page of current index record, switch to pdf, go to page
+
+	; Search for embedded id in index record, switch to embedding software, search for embedded tag/range in text editor or other software
 
 
 
@@ -47,35 +117,62 @@ return
 	; xrefs clipboard to main
 
 
-;;;;;;;;;;;
-; Functions
-;;;;;;;;;;;
+;;;;;;;;;;;;;;;
+;; Functions ;;
+;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Functions to standardize interface
 ; With different software packages
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Input to either return or not
+f_return()
+{
+	global v_source_id
+	input, v_input, V T10 E, {enter}{up}{down}
+	if (ErrorLevel = "Timeout")
+	{
+		Sleep, 1
+		return
+	}
+	if (ErrorLevel = "EndKey:Enter")
+	{
+		WinActivate ahk_id %v_source_id%
+		return
+	}
+	if (ErrorLevel = "EndKey:Up")
+	{
+		Sleep 1
+		return
+	}
+	if (ErrorLevel = "EndKey:Down")
+	{
+		Sleep 1
+		return
+	}
+}
+
 
 ; change to preferred indexing software
-Change_index_software() {
-	global index_software
-	if (index_software = "sky") and (! WinExist("ahk_class ThunderRT6FormDC")) 
+f_change_to_index_software() {
+	global v_index_software
+	if (v_index_software = "sky") and (! WinExist("ahk_class ThunderRT6FormDC")) 
 	{
 		MsgBox Sky is not open. Please open Sky and your index file.
 		return
 	}
-	else if (index_software = "sky") and (WinExist("ahk_class ThunderRT6FormDC"))
+	else if (v_index_software = "sky") and (WinExist("ahk_class ThunderRT6FormDC"))
 	{
 		WinActivate
 		return
 	}
-	if (index_software = "cindex") and (! WinExist("ahk_class cdx_frame$")) 
+	if (v_index_software = "cindex") and (! WinExist("ahk_class cdx_frame$")) 
 	{
 		MsgBox Cindex is not open. Please open Cindex and your index file.
 		return
 	}
-	else if (index_software = "cindex") and (WinExist("ahk_class cdx_frame$"))
+	else if (v_index_software = "cindex") and (WinExist("ahk_class cdx_frame$"))
 	{
 		WinActivate
 		return
@@ -89,29 +186,54 @@ Change_index_software() {
 
 ; create new record in preferred indexing software
 
-create_new_record() {
-	global index_software
-	if (index_software = "sky") 
+f_create_new_record() {
+	global v_index_software
+	if (v_index_software = "sky") 
 	{
 		Send {ctrl down}{;}{ctrlup}
 		return
 	}
-	if (index_software = "cindex")
+	if (v_index_software = "cindex")
 	{
 		Send {ctrl down}k{ctrlup}
 		return
 	}
 }
 
+; Clean Text by pasting to WordPad.
+f_clean_text() {
+	global v_clean_text
+	if (v_clean_text = "yes") and (! WinExist("ahk_class WordPadClass")) 
+	{
+		MsgBox Open WordPad
+		Exit
+	}
+	else if (v_clean_text = "yes") and (WinExist("ahk_class WordPadClass")) 
+	{
+		WinActivate
+		Sleep, 10
+		Send ^v
+		Send ^a
+		Send ^c		
+		return
+	}
+	else
+	{
+		Sleep, 10
+		return
+	}
+}
+
+
 ; move to subheading from main in preferred indexing software
-Move_to_sub_from_main() {
-	global index_software
-	if (index_software = "sky") 
+f_move_to_sub_from_main() {
+	global v_index_software
+	if (v_index_software = "sky") 
 	{
 		Send {tab}
 		return
 	}
-	if (index_software = "cindex")
+	if (v_index_software = "cindex")
 	{
 		Send {tab}
 		return
@@ -119,14 +241,14 @@ Move_to_sub_from_main() {
 }
 
 ; swap main and sub in preferred indexing software
-Swap_sub_and_main() { 	; Main must be selected
-	global index_software
-	if (index_software = "sky") 
+f_swap_sub_and_main() { 	; Main must be selected
+	global v_index_software
+	if (v_index_software = "sky") 
 	{
 		Send {f4}{left}
 		return
 	}
-	if (index_software = "cindex")
+	if (v_index_software = "cindex")
 	{
 		Send {ctrl down}{+}{ctrl up}
 		return
@@ -135,14 +257,14 @@ Swap_sub_and_main() { 	; Main must be selected
 
 
 ; complete/finalize record in preferred indexing software
-Finalize_record() {
-	global index_software
-	if (index_software = "sky") 
+f_finalize_record() {
+	global v_index_software
+	if (v_index_software = "sky") 
 	{
 		Send {down}{up}
 		return
 	}
-	if (index_software = "cindex")
+	if (v_index_software = "cindex")
 	{
 		Send {ctrl down}k{ctrl up}
 		return
@@ -151,102 +273,64 @@ Finalize_record() {
 
 
 ; Move to page
-Move_to_page() {
-	global index_software
-	if (index_software = "sky") 
-	{
-		Send {End}
-		return
-	}
-	if (index_software = "cindex")
-	{
-		Send {End 4}
-		return
+f_move_to_page() {
+global v_index_software
+if (v_index_software = "sky") 
+{
+	Send {End}
+	return
+}
+if (v_index_software = "cindex")
+{
+	Send {End 4}
+	return
+}
+}
+
+; Copy Page
+f_copy_page() {
+global v_index_software
+if (v_index_software = "sky") 
+{
+	Send {End}
+	Send ^c
+	return
+}
+if (v_index_software = "cindex")
+{
+	Send {End 4}
+	Send {Shift down}{Home}{Shift up}^c
+	return
 	}
 }
 
-
-; copy_page() {
-	global index_software
-	if (index_software = "sky") 
-	{
-		Send {End}
-		Send ^c
-		return
-	}
-	if (index_software = "cindex")
-	{
-		Send {End 4}
-		Send {Shift down}{Home}{Shift up}^c
-		return
+; Strip fonts
+f_strip_fonts() {
+global v_index_software
+if (v_index_software = "sky") 
+{
+	Send !{F10}
+	return
+}
+if (v_index_software = "cindex")
+{
+	Send ^+d
+	return
 	}
 }
 
+; Strip formatting
+f_strip_formatting() {
+global v_index_software
+if (v_index_software = "sky") 
+{
+	Send ^!{F10}
+	return
+}
+if (v_index_software = "cindex")
+{
+	Send ^t
+	return
+	}
+}
 
-
-
-; Macros
-
-	; Macro To Do list
-
-		; Simple copy paste to main
-
-			; Copy text to main includes formatting
-
-			; Copy text to main strips formatting
-
-		; Pastes to subheads - Mainly for lists
-
-			; Copy from pdf, creates new record from previous main, pastes to subhead,
-
-			; Copy from pdf, creates new record from previous main, pastes to subhead adds "s",
-
-			; Copy from pdf, creates new record from previous main, pastes to subhead, adds and
-
-			; Copy from pdf, creates new record from previous main, pastes to subhead, plural + and
-
-			; The above but also doubleposts
-
-		; books / inversions / names - Inversion happen for many reasons. 
-
-			; invert last - used for names and general
-
-				; Copy from pdf, invert last word and paste to index
-				
-				; Copy from pdf, invert last word and paste to index initials with dots
-
-				; Copy from pdf, invert last word and paste to index initials without dots
-				
-				; As above but with list of names
-
-			; Invert first - mainly for books without authors eg. The Bible. 
-
-				; Copy from pdf, invert first word and paste to new main
-
-			; with parentheses - books and general
-
-				; Copy text to main add parentheses with curser within
-
-				; as above, invert first word
-				
-				; as above but roman type in quotes
-
-		; Search/navigate pdf / text
-
-			; Copy text from index and search pdf. Must work with italics and unicode
-
-				; Maybe have two, one that starts from the beginning of the pdf and one that starts at the page
-
-			; Find page of current index record, switch to pdf, go to page
-
-			; Search for embedded id in index record, switch to embedding software, search for embedded tag/range in text editor or other software
-
-
-; Switch to Sky
-^+q::
-IfWinNotExist, ahk_class ThunderRT6FormDC
-	MsgBox Sky is not open. Please open Sky and your index file.
-WinActivate ahk_class ThunderRT6FormDC
-return
-
-; Copy from Foxit
