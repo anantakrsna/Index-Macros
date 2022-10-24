@@ -16,15 +16,13 @@
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
+
 ; Settings
 v_doc_software = "foxit" 			; including embedding document. 
 v_index_software = sky			; must by "cindex" or "sky" WITHOUT quotes
-v_and_suffix = " and"
-v_plural_suffix = "s"
+v_and_end = " and"
+v_plural_end = "s"
 
-^+e::
-f_finalize_record()
-return
 
 
 ;;;;;;;;;;
@@ -37,40 +35,170 @@ return
 
 ; Simple copy paste to main
 
-	; Copy text to main includes formatting
+; Copy text to main Roman
 ^#c::
 WinGet, v_source_id, ID, A
 Send ^c
 f_change_to_index_software()
 f_create_new_record()
-Send ^v
-Send {F2}
-f_strip_fonts()
-f_return()
+Send ^v{up}{down}
+f_strip_formatting()
+Send {Right}
+return
 
-
-	; Copy text to main strips formatting
-
-!#c::
+; Copy text to main Roman + "s"
+^+#c::
 WinGet, v_source_id, ID, A
 Send ^c
 f_change_to_index_software()
 f_create_new_record()
-Send ^v
+Send ^v{F2}s{up}{down}
 f_strip_formatting()
-f_return()
+Send {Right}
+return
+
+
+; Copy text to main italics
+!#c::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, ^v{up}{down}
+f_strip_formatting()
+Send, {F2}^i{Right}
+return
+
+; Copy text to main italic plus "s"
+!+#c::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, ^v{F2}s{up}{down}
+f_strip_formatting()
+Send, {F2}^i{Right}
+return
 
 ; Pastes to subheads - Mainly for lists
 
-	; Copy from pdf, creates new record from previous main, pastes to subhead,
+	; Copy from pdf, pastes to subhead,
+#^a::
+SendInput, ^c
+f_change_to_index_software()
+f_create_new_record()
+SendInput, {right}
+SendInput, ^v{up}{down}
+f_strip_formatting()
+return
 
-	; Copy from pdf, creates new record from previous main, pastes to subhead adds "s",
+	; Copy from pdf, pastes to subhead adds "s",
+#+a::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v{F2}s{up}{down}
+f_strip_formatting()
+return
 
-	; Copy from pdf, creates new record from previous main, pastes to subhead, adds and
 
-	; Copy from pdf, creates new record from previous main, pastes to subhead, plural + and
+	; Copy from pdf, pastes to subhead, adds and
+#!a::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v{F2}{space}and
+Send, {Up}
+Send, {Down}
+f_strip_formatting()
+return
 
-	; The above but also doubleposts
+	; Copy from pdf, pastes to subhead, plural + and
+#+!a::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v{F2}s and{up}{down}
+f_strip_formatting()
+return
+
+
+; Pastes to subheads - Roman
+
+	; Copy from pdf, pastes to subhead,
+#^s::
+SendInput, ^c
+f_change_to_index_software()
+f_create_new_record()
+SendInput, {right}
+SendInput, ^v{up}{down}
+f_strip_formatting()
+Send, {F2}^i{F2}
+return
+
+	; Copy from pdf, pastes to subhead adds "s",
+#+s::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v{F2}s{up}{down}
+f_strip_formatting()
+Send, {F2}^i{F2}
+return
+
+
+	; Copy from pdf, pastes to subhead, adds and
+#!s::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v
+f_strip_formatting()
+Send, {F2}^i{F2}
+Send {space}and
+Send, {Up}
+Send, {Down}
+return
+
+	; Copy from pdf, pastes to subhead, plural + and
+#+!s::
+WinGet, v_source_id, ID, A
+Send, ^c
+f_change_to_index_software()
+f_create_new_record()
+Send, {tab}
+Send, ^v
+f_strip_formatting()
+Send, {F2}s ^iand{F2}
+Send, {Up}
+Send, {Down}
+return
+
+
+; Double Post but maintain last heading
+#^d::
+Send, {Home}
+Send, {F4}^{F4}
+return
+
+
+; toggle italic on last word - mainly if and follows and 
+#!f::
+Send, {F2}
+Send, {Shift Down}^{Left}{Shift Up}
+Send, ^i
+Send, {F2}
+return
 
 ; books / inversions / names - Inversion happen for many reasons. 
 
@@ -256,12 +384,13 @@ f_swap_sub_and_main() { 	; Main must be selected
 }
 
 
+
 ; complete/finalize record in preferred indexing software
 f_finalize_record() {
 	global v_index_software
 	if (v_index_software = "sky") 
 	{
-		Send {down}{up}
+		Send {up}{down}
 		return
 	}
 	if (v_index_software = "cindex")
@@ -274,63 +403,50 @@ f_finalize_record() {
 
 ; Move to page
 f_move_to_page() {
-global v_index_software
-if (v_index_software = "sky") 
-{
-	Send {End}
-	return
-}
-if (v_index_software = "cindex")
-{
-	Send {End 4}
-	return
-}
+	global v_index_software
+	if (v_index_software = "sky") 
+	{
+		Send {End}
+		return
+	}
+	if (v_index_software = "cindex")
+	{
+		Send {End 4}
+		return
+	}
 }
 
 ; Copy Page
 f_copy_page() {
-global v_index_software
-if (v_index_software = "sky") 
-{
-	Send {End}
-	Send ^c
-	return
-}
-if (v_index_software = "cindex")
-{
-	Send {End 4}
-	Send {Shift down}{Home}{Shift up}^c
-	return
+	global v_index_software
+	if (v_index_software = "sky") 
+	{
+		Send {End}
+		Send ^c
+		return
+	}
+	if (v_index_software = "cindex")
+	{
+		Send {End 4}
+		Send {Shift down}{Home}{Shift up}^c
+		return
 	}
 }
 
-; Strip fonts
-f_strip_fonts() {
-global v_index_software
-if (v_index_software = "sky") 
-{
-	Send !{F10}
-	return
-}
-if (v_index_software = "cindex")
-{
-	Send ^+d
-	return
-	}
-}
 
 ; Strip formatting
 f_strip_formatting() {
-global v_index_software
-if (v_index_software = "sky") 
-{
-	Send ^!{F10}
-	return
-}
-if (v_index_software = "cindex")
-{
-	Send ^t
-	return
+	global v_index_software
+	if (v_index_software = "sky") 
+	{
+		Send {F2}
+		Send ^!{F10}
+		return
+	}
+	if (v_index_software = "cindex")
+	{
+		Send ^t
+		return
 	}
 }
 
