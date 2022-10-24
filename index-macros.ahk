@@ -197,10 +197,49 @@ return
 	; invert last - used for names and general
 
 		; Copy from pdf, invert last word and paste to index
+#^n::
+WinGet, v_source_id, ID, A
+Send, ^c
+Sleep, 10
+v_name1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_name_final := RegExReplace(v_name1, "^(.*?) ([^ ]*$)", "$2, $1")
+f_change_to_index_software()
+f_create_new_record()
+Send,%v_name_final%
+Send,{Up}
+Send,{Down}
+return
+
 
 		; Copy from pdf, invert last word and paste to index initials with dots
 
+#+n::
+WinGet, v_source_id, ID, A
+Send, ^c
+Sleep, 10
+v_name1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_name2 := RegExReplace(v_name1, "^(.*?) ([^ ]*$)", "$2, $1")
+v_name_final := RegExReplace(v_name2, "( \w)\w+(?= |$)", "$1")
+f_change_to_index_software()
+f_create_new_record()
+Send,%v_name_final%
+Send,{Up}
+Send,{Down}
+return
 		; Copy from pdf, invert last word and paste to index initials without dots
+#!n::
+WinGet, v_source_id, ID, A
+Send, ^c
+Sleep, 10
+v_name1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_name2 := RegExReplace(v_name1, "^(.*?) ([^ ]*$)", "$2, $1")
+v_name_final := RegExReplace(v_name2, "( \w)\w+(?= |$)", "$1.")
+f_change_to_index_software()
+f_create_new_record()
+Send,%v_name_final%
+Send,{Up}
+Send,{Down}
+return
 
 		; As above but with list of names
 
