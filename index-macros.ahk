@@ -192,14 +192,6 @@ Send, {F4}^{F4}
 return
 
 
-; toggle italic on last word - mainly if and follows and 
-#!f::
-Send, {F2}
-Send, {Shift Down}^{Left}{Shift Up}
-Send, ^i
-Send, {F2}
-return
-
 ; books / inversions / names - Inversion happen for many reasons. 
 
 	; invert last - used for names and general
