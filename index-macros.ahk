@@ -250,8 +250,26 @@ return
 	; with parentheses - books and general
 
 		; Copy text to main add parentheses with curser within
+#^b::
+WinGet, v_source_id, ID, A
+Send ^c
+f_change_to_index_software()
+f_create_new_record()
+Send ^v
+f_strip_formatting()
+Send, {space}{(}{)}{Left}
+return
 
 		; as above, invert first word
+#^!b::
+WinGet, v_source_id, ID, A
+Send ^c
+f_change_to_index_software()
+f_create_new_record()
+Send ^v
+f_strip_formatting()
+Send, {F2}^i{F2} ^i{(}{)}{Left}
+return
 
 		; as above but roman type in quotes
 
