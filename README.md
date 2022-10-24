@@ -38,6 +38,10 @@ The script can be edited with a text editor.
 | Win+Shift+alt+s | Copy to sub, Italic, plural and "and" |
 | --- | ---- |
 | Win+Ctrl+d | Double post but keep the original main as the last record.|
+|---|----|
+|Win+Ctrl+n|Invert last word and paste to main. Mainly for names.|
+|Win+Alt+n|Invert last word, other words as initials with a dot.|
+|Win+Shift+n|Invert last word, other words as initials without a dot.|
 
 ## Known issues
 
