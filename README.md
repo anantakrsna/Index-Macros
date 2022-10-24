@@ -42,6 +42,9 @@ The script can be edited with a text editor.
 |Win+Ctrl+n|Invert last word and paste to main. Mainly for names.|
 |Win+Alt+n|Invert last word, other words as initials with a dot.|
 |Win+Shift+n|Invert last word, other words as initials without a dot.|
+|---|----|
+|Win+Ctrl+b|Copy text to main as roman, adds parentheses with curser within|
+|Win+Ctrl+Alt+b|Copy text to main as italic, adds parentheses with curser within|
 
 ## Known issues
 
