@@ -26,11 +26,18 @@ The script can be edited with a text editor.
 | Win+Ctrl+Shift+c | Copy text to main Roman plural |
 | Win+Alt+c | Copy text with italic |
 | Win+Alt+Shift+c | Copy text to main italic plural |
-| --- | --- |
+| --- | ---- |
 | Win+Ctrl+a | Copy to sub, Roman |
-| Win+Shift+a | Copy to sub, Roman plural |
-| Win+Shift+a | Copy to sub, Roman plus "and" |
-| Win+Shift+alt+a | Copy to sub, Roman plural and "and" |
+| Win+Shift+a | Copy to sub, Roman, plural |
+| Win+Shift+a | Copy to sub, Roman, plus "and" |
+| Win+Shift+alt+a | Copy to sub, Roman, plural and "and" |
+| --- | ---- |
+| Win+Ctrl+s | Copy to sub, Italic |
+| Win+Shift+s | Copy to sub, Italic, plural |
+| Win+Shift+s | Copy to sub, Italic, plus "and" |
+| Win+Shift+alt+s | Copy to sub, Italic, plural and "and" |
+| --- | ---- |
+| Win+Ctrl+d | Double post but keep the original main as the last record.|
 
 ## Known issues
 
