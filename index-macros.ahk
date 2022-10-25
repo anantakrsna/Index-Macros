@@ -18,7 +18,7 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 
 ; Settings
-v_doc_software = "foxit" 			; including embedding document. 
+v_doc_software = foxit 			; including embedding document. 
 v_index_software = sky			; must by "cindex" or "sky" WITHOUT quotes
 v_and_end = " and"
 v_plural_end = "s"
@@ -271,15 +271,80 @@ f_strip_formatting()
 Send, {F2}^i{F2} ^i{(}{)}{Left}
 return
 
-		; as above but roman type in quotes
 
 ; Search/navigate pdf / text
 
 	; Copy text from index and search pdf. Must work with italics and unicode
+#^f::
+Send ^c
+Sleep 100
+v_search1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_search_final := RegExReplace(v_search1, "/i\d", "")
+f_change_to_doc_software()
+Sleep 10
+Send ^f
+Send %v_search_final%
+Send {Enter}
+return
 
-		; Maybe have two, one that starts from the beginning of the pdf and one that starts at the page
+; Search pdf from start
+#^+f::
+Send ^c
+Sleep 100
+v_search1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_search_final := RegExReplace(v_search1, "/i\d", "")
+f_change_to_doc_software()
+Send {Home}
+Sleep 10
+Send ^f
+Send %v_search_final%
+Send {Enter}
+return
+
+; Search pdf cleaned by wordpad
+#!f::
+Send ^c
+Sleep 100
+f_clean_text()
+Sleep 100
+v_search1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_search_final := RegExReplace(v_search1, "/i\d", "")
+f_change_to_doc_software()
+Sleep 10
+Send ^f
+Send %v_search_final%
+Send {Enter}
+return
+
+; Search pdf from top cleaned by wordpad
+#!+f::
+Send ^c
+Sleep 100
+f_clean_text()
+Sleep 100
+v_search1 := RegExReplace(Clipboard, "(?:^ | $)", "")
+v_search_final := RegExReplace(v_search1, "/i\d", "")
+f_change_to_doc_software()
+Send {Home}
+Sleep 10
+Send ^f
+Send %v_search_final%
+Send {Enter}
+return
+
 
 	; Find page of current index record, switch to pdf, go to page
+#^g::
+Send {End}
+Send ^c
+Sleep 100
+v_page := RegExReplace(Clipboard, "(^\d+).*?", "$1")
+f_change_to_doc_software()
+Sleep 10
+Send ^g
+Send %v_page%
+Send {Enter}
+return
 
 	; Search for embedded id in index record, switch to embedding software, search for embedded tag/range in text editor or other software
 
@@ -360,7 +425,34 @@ f_change_to_index_software() {
 	}
 }
 
-
+; change to preferred indexing software
+f_change_to_doc_software() {
+	global v_doc_software
+	if (v_doc_software = "foxit") and (! WinExist("ahk_class classFoxitReader")) 
+	{
+		MsgBox Foxit is not open. Please open Foxit and your index file.
+		return
+	}
+	else if (v_doc_software = "foxit") and (WinExist("ahk_class classFoxitReader"))
+	{
+		WinActivate
+		return
+	}
+	if (v_doc_software = "acrobat") and (! WinExist("ahk_class AcrobatSDIWindow")) 
+	{
+		MsgBox Acrobat is not open. Please open Acrobat and your index file.
+		return
+	}
+	else if (v_doc_software = "acrobat") and (WinExist("ahk_class AcrobatSDIWindow"))
+	{
+		WinActivate
+		return
+	}
+	else 
+	{
+		MsgBox Set index_software variable to valid value.		
+	}
+}
 ; create new record in preferred indexing software
 
 f_create_new_record() {
@@ -379,24 +471,19 @@ f_create_new_record() {
 
 ; Clean Text by pasting to WordPad.
 f_clean_text() {
-	global v_clean_text
-	if (v_clean_text = "yes") and (! WinExist("ahk_class WordPadClass")) 
+	if (! WinExist("ahk_class WordPadClass")) 
 	{
 		MsgBox Open WordPad
 		Exit
 	}
-	else if (v_clean_text = "yes") and (WinExist("ahk_class WordPadClass")) 
+	else (WinExist("ahk_class WordPadClass")) 
 	{
 		WinActivate
 		Sleep, 10
+		Send ^a
 		Send ^v
 		Send ^a
 		Send ^c		
-		return
-	}
-	else
-	{
-		Sleep, 10
 		return
 	}
 }
