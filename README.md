@@ -45,11 +45,25 @@ The script can be edited with a text editor.
 |---|----|
 |Win+Ctrl+b|Copy text to main as roman, adds parentheses with curser within|
 |Win+Ctrl+Alt+b|Copy text to main as italic, adds parentheses with curser within|
+|---|----|
+|Win+Ctrl+f|search for highlighted text in the pdf|
+|Win+Ctrl+Shift+f|Search for highlighted text from start of pdf|
+|Win+Alt+f|search for highlighted text in the pdf after pasting into Wordpad. For difficult diacritics from Sky.|
+|Win+Alt+Shift+f|Search for highlighted text from start of pdf after pasting into Wordpad. For difficult diacritics from Sky.|
+|Win+Ctrl+g|Go to page in pdf of the current record.|
+
+## PDF or Indexing software choice
+
+Open the script in a text editor
+change "v_doc_software = foxit" or "v_index_software = sky" to the correct values. Currently only Acrobat or Foxit and Sky or Cindex.
+
 
 ## Known issues
 
 I found it buggy on my Windows 10 laptop but it works fine on my Windows 11 desktop. Don't know why. So please test with a test index and watch the results while using. 
 
 Problems may occur if a record is still being edited. 
+
+Most functions probably won't work with Cindex. 
 
 
